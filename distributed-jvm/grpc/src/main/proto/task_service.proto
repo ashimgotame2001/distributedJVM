@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "com.distributed.jvm.grpc";
+option java_outer_classname = "TaskServiceProto";
+
+service TaskService {
+  rpc SubmitTask(TaskRequest) returns (TaskResponse);
+}
+
+message TaskRequest {
+  bytes taskBytes = 1;
+}
+
+message TaskResponse {
+  bytes result = 1;
+}

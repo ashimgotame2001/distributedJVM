@@ -1,0 +1,68 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "com.distributed.jvm.grpc";
+option java_outer_classname = "NodeMetricProto";
+
+enum NodeStatus {
+  UNKNOWN = 0;
+  READY = 1;
+  BUSY = 2;
+  OFFLINE = 3;
+}
+
+message CpuMetrics {
+  double systemCpuLoad = 1;   // System-wide CPU usage %
+  double processCpuLoad = 2;  // This JVM's CPU usage %
+  int32 availableProcessors = 3;
+}
+
+message MemoryMetrics {
+  int32 heapUsedMB = 1;
+  int32 heapMaxMB = 2;
+  int32 nonHeapUsedMB = 3;
+  int32 nonHeapMaxMB = 4;
+}
+
+message TaskMetrics {
+  int32 pendingTasks = 1;
+  int32 runningTasks = 2;
+  int32 maxQueueSize = 3;
+  int32 avgTaskTimeMs = 4;
+}
+
+message NetworkMetrics {
+  float latencyMsToClient = 1;
+  float bandwidthMbps = 2;
+}
+
+message NodeMetrics {
+  string nodeId = 1;
+  string host = 2;
+  int32 port = 3;
+  NodeStatus status = 4;
+  int64 lastHeartbeat = 5;
+
+  CpuMetrics cpu = 6;
+  MemoryMetrics memory = 7;
+  TaskMetrics tasks = 8;
+  NetworkMetrics network = 9;
+  repeated string capabilities = 10;
+}
+
+
+message NodeHealthResponse {
+  string nodeId = 1;
+  string host = 2;
+  int32 port = 3;
+  NodeStatus status = 4;
+  int64 lastHeartbeat = 5;
+  CpuMetrics cpu = 6;
+}
+
+message EmptyRequest {}
+
+service NodeAgentService {
+  rpc GetNodeMetrics(EmptyRequest) returns (NodeMetrics);
+  rpc GetNodeHealth(EmptyRequest) returns (NodeHealthResponse);
+}
