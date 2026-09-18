@@ -10,3 +10,9 @@ out/
 *.log
 .DS_Store
 bin/
+
+# Keep README files only; leave other markdown local/untracked
+*.md
+!README.md
+!**/README.md
+!**/ReadMe.md
