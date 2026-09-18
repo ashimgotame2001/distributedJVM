@@ -1,0 +1,9 @@
+plugins {
+    id 'java-library'
+}
+
+dependencies {
+    api project(':sdk')
+    api project(':common')
+    implementation project(':proto')
+}

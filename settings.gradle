@@ -1,0 +1,3 @@
+rootProject.name = 'microjvm'
+
+include 'proto', 'common', 'sdk', 'runtime', 'node', 'fabric', 'samples'
