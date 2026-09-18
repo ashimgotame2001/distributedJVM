@@ -1,0 +1,13 @@
+plugins {
+    id 'application'
+}
+
+dependencies {
+    implementation project(':sdk')
+    implementation project(':runtime')
+    implementation project(':common')
+}
+
+application {
+    mainClass = 'com.microjvm.samples.SubmitSample'
+}

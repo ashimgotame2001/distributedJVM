@@ -1,0 +1,75 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "com.microjvm.proto";
+option java_outer_classname = "NodeExecutorProto";
+
+package microjvm;
+
+service NodeExecutor {
+  rpc ExecuteTask(ExecuteRequest) returns (stream TaskEvent);
+  rpc CancelTask(TaskId) returns (Ack);
+  rpc ReportHealth(HealthRequest) returns (stream NodeSnapshot);
+}
+
+message TaskId {
+  string value = 1;
+}
+
+message ArtifactRef {
+  string group = 1;
+  string name = 2;
+  string version = 3;
+  string content_hash = 4;
+}
+
+message EntryPoint {
+  string class_name = 1;
+  string method_name = 2;
+}
+
+message ExecuteRequest {
+  TaskId task_id = 1;
+  EntryPoint entry = 2;
+  bytes args = 3;
+  repeated ArtifactRef artifact_refs = 4;
+}
+
+message TaskProgress {
+  string message = 1;
+  double fraction = 2;
+}
+
+message TaskResult {
+  bytes payload = 1;
+}
+
+message TaskError {
+  string type = 1;
+  string message = 2;
+}
+
+message TaskEvent {
+  TaskId task_id = 1;
+  oneof body {
+    TaskProgress progress = 2;
+    TaskResult result = 3;
+    TaskError error = 4;
+  }
+}
+
+message Ack {
+  bool ok = 1;
+  string message = 2;
+}
+
+message HealthRequest {}
+
+message NodeSnapshot {
+  string node_id = 1;
+  double cpu_load = 2;
+  int64 heap_used_bytes = 3;
+  int64 heap_max_bytes = 4;
+  int32 active_tasks = 5;
+  int64 timestamp_epoch_ms = 6;
+}

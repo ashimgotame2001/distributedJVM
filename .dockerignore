@@ -1,0 +1,7 @@
+.gradle/
+**/build/
+.git/
+distributed-jvm/
+*.md
+.idea/
+.vscode/
