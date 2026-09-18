@@ -1,5 +1,6 @@
 package com.microjvm.node;
 
+import com.microjvm.common.codec.JavaSerializationCodec;
 import com.microjvm.proto.ExecuteRequest;
 import com.microjvm.proto.NodeExecutorGrpc;
 import com.microjvm.proto.TaskEvent;
@@ -7,7 +8,6 @@ import com.microjvm.proto.TaskId;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.stub.StreamObserver;
-import java.nio.charset.StandardCharsets;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
@@ -51,17 +51,30 @@ public class RoundTripSpikeRunner implements ApplicationRunner {
     }
   }
 
-  static String invokePeer(String host, int port) throws InterruptedException {
+  static String invokePeer(String host, int port) throws Exception {
+    JavaSerializationCodec codec = new JavaSerializationCodec();
     ManagedChannel channel = ManagedChannelBuilder.forAddress(host, port).usePlaintext().build();
     try {
       NodeExecutorGrpc.NodeExecutorStub stub = NodeExecutorGrpc.newStub(channel);
       CountDownLatch done = new CountDownLatch(1);
-      AtomicReference<String> payload = new AtomicReference<>();
+      AtomicReference<byte[]> payload = new AtomicReference<>();
       AtomicReference<Throwable> error = new AtomicReference<>();
 
       ExecuteRequest request =
           ExecuteRequest.newBuilder()
               .setTaskId(TaskId.newBuilder().setValue("spike-" + System.nanoTime()).build())
+              .setEntry(
+                  com.microjvm.proto.EntryPoint.newBuilder()
+                      .setClassName("com.microjvm.tasks.Echo")
+                      .setMethodName("echo")
+                      .build())
+              .setArgs(com.google.protobuf.ByteString.copyFrom(codec.serialize(new Object[] {"pong"})))
+              .addArtifactRefs(
+                  com.microjvm.proto.ArtifactRef.newBuilder()
+                      .setGroup("com.microjvm")
+                      .setName("samples-tasks")
+                      .setVersion("0.1.0")
+                      .build())
               .build();
 
       stub.executeTask(
@@ -70,7 +83,12 @@ public class RoundTripSpikeRunner implements ApplicationRunner {
             @Override
             public void onNext(TaskEvent value) {
               if (value.hasResult()) {
-                payload.set(value.getResult().getPayload().toString(StandardCharsets.UTF_8));
+                payload.set(value.getResult().getPayload().toByteArray());
+              }
+              if (value.hasError()) {
+                error.set(
+                    new IllegalStateException(
+                        value.getError().getType() + ": " + value.getError().getMessage()));
               }
             }
 
@@ -86,7 +104,7 @@ public class RoundTripSpikeRunner implements ApplicationRunner {
             }
           });
 
-      if (!done.await(10, TimeUnit.SECONDS)) {
+      if (!done.await(30, TimeUnit.SECONDS)) {
         throw new IllegalStateException("Timed out waiting for ExecuteTask response");
       }
       if (error.get() != null) {
@@ -95,7 +113,7 @@ public class RoundTripSpikeRunner implements ApplicationRunner {
       if (payload.get() == null) {
         throw new IllegalStateException("No result event received");
       }
-      return payload.get();
+      return codec.deserialize(payload.get(), String.class);
     } finally {
       channel.shutdownNow();
       channel.awaitTermination(5, TimeUnit.SECONDS);

@@ -8,6 +8,7 @@ services:
     environment:
       NODE_ID: node-a
       GRPC_PORT: "9090"
+      ARTIFACT_ROOT: /app/artifacts
       SPIKE_ENABLED: "false"
     ports:
       - "9091:9090"
@@ -27,6 +28,7 @@ services:
     environment:
       NODE_ID: node-b
       GRPC_PORT: "9090"
+      ARTIFACT_ROOT: /app/artifacts
       SPIKE_ENABLED: "false"
     ports:
       - "9092:9090"
@@ -46,6 +48,7 @@ services:
     environment:
       NODE_ID: node-c
       GRPC_PORT: "9090"
+      ARTIFACT_ROOT: /app/artifacts
       SPIKE_ENABLED: "false"
     ports:
       - "9093:9090"
@@ -69,5 +72,6 @@ services:
       GRPC_PORT: "9099"
       PEER_HOST: node-b
       PEER_PORT: "9090"
+      ARTIFACT_ROOT: /app/artifacts
       SPIKE_ENABLED: "true"
     restart: "no"

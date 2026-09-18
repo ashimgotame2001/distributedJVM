@@ -16,3 +16,5 @@ bin/
 !README.md
 !**/README.md
 !**/ReadMe.md
+
+artifacts/

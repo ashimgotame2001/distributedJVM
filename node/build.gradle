@@ -13,6 +13,9 @@ dependencies {
     implementation libs.grpc.netty.shaded
     implementation libs.grpc.services
 
+    testImplementation project(':runtime')
+    testImplementation project(':sdk')
+    testImplementation project(':samples-tasks')
     testImplementation libs.spring.boot.starter.test
 }
 
@@ -21,5 +24,6 @@ tasks.named('bootJar') {
 }
 
 tasks.named('jar') {
-    enabled = false
+    enabled = true
+    archiveClassifier = 'lib'
 }

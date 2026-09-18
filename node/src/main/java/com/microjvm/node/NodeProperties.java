@@ -7,6 +7,8 @@ public class NodeProperties {
   private String id = "node-local";
   private String peerHost = "";
   private int peerPort = 0;
+  private String artifactRoot = "artifacts";
+  private int workerThreads = 4;
 
   public String getId() {
     return id;
@@ -30,6 +32,22 @@ public class NodeProperties {
 
   public void setPeerPort(int peerPort) {
     this.peerPort = peerPort;
+  }
+
+  public String getArtifactRoot() {
+    return artifactRoot;
+  }
+
+  public void setArtifactRoot(String artifactRoot) {
+    this.artifactRoot = artifactRoot;
+  }
+
+  public int getWorkerThreads() {
+    return workerThreads;
+  }
+
+  public void setWorkerThreads(int workerThreads) {
+    this.workerThreads = workerThreads;
   }
 
   public boolean hasPeer() {

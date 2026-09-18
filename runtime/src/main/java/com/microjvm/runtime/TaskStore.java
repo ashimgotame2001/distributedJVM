@@ -1,5 +1,6 @@
 package com.microjvm.runtime;
 
+import com.microjvm.common.TaskStatus;
 import java.util.Optional;
 
 public interface TaskStore {
@@ -7,5 +8,7 @@ public interface TaskStore {
 
   Optional<StoredTask> get(String taskId);
 
-  StoredTask updateStatus(String taskId, com.microjvm.common.TaskStatus status);
+  StoredTask updateStatus(String taskId, TaskStatus status);
+
+  StoredTask update(String taskId, StoredTask task);
 }

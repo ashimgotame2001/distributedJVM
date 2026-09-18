@@ -5,5 +5,9 @@ plugins {
 dependencies {
     api project(':sdk')
     api project(':common')
-    implementation project(':proto')
+    api project(':proto')
+    api libs.grpc.netty.shaded
+    api libs.grpc.stub
+    api libs.grpc.protobuf
+    api libs.protobuf.java
 }

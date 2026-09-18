@@ -40,11 +40,11 @@ public final class MicroFuture<T> {
     return delegate;
   }
 
-  void complete(T value) {
+  public void complete(T value) {
     delegate.complete(value);
   }
 
-  void completeExceptionally(Throwable error) {
+  public void completeExceptionally(Throwable error) {
     delegate.completeExceptionally(error);
   }
 }

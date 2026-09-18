@@ -20,15 +20,19 @@ public final class InMemoryTaskStore implements TaskStore {
 
   @Override
   public StoredTask updateStatus(String taskId, TaskStatus status) {
-    StoredTask updated =
-        tasks.compute(
-            taskId,
-            (id, existing) -> {
-              if (existing == null) {
-                throw new IllegalArgumentException("Unknown taskId: " + id);
-              }
-              return existing.withStatus(status);
-            });
-    return updated;
+    return tasks.compute(
+        taskId,
+        (id, existing) -> {
+          if (existing == null) {
+            throw new IllegalArgumentException("Unknown taskId: " + id);
+          }
+          return existing.withStatus(status);
+        });
+  }
+
+  @Override
+  public StoredTask update(String taskId, StoredTask task) {
+    tasks.put(taskId, task);
+    return task;
   }
 }
